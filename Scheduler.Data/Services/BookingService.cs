@@ -123,6 +123,7 @@ namespace Scheduler.Data.Services
             return e;
         }
 
+        // logic to verify event is valid (not overlapping etc)
         public bool IsValidEvent(Event n)
         {
             if (n.Start > n.End)
