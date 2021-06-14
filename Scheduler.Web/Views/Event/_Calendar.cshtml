@@ -5,16 +5,10 @@
   <!-- calendar mounted here -->
   <div id='calendar'></div>
 
-  <!-- local event styling -->
+  <!-- event ownership event styling -->
   <style>
-    .notowner {
-      background-color: gray;
-      color: gray;
-    }
-    .owner {
-      background-color: cadetblue;
-      color: black;
-    }
+    .other { background-color: gray; color: gray; }
+    .owner { background-color: cadetblue; color: black; }
   </style>
 
   <script>
@@ -30,31 +24,31 @@
     
     function configCalendar(calendarEl) {   
         // needs wrapped in Html.Raw to stop characters being encoded (or evaluated)
-        const json      = '@Html.Raw(Model.EventsAsJson)'
-        const startDate = '@Html.Raw(Model.Start)'
-        const endDate   = '@Html.Raw(Model.End)'
-        const roomId    = '@Html.Raw(Model.RoomId)'
-        const userId    = '@Html.Raw(Model.UserId)'
-
+        const json        = '@Html.Raw(Model.SerializeEventsForUser(@Model.UserId, @User.HasOneOfRoles("Admin")))'
+        const startDate   = '@Html.Raw(Model.Start)'
+        const endDate     = '@Html.Raw(Model.End)'
+        const roomId      = '@Html.Raw(Model.RoomId)'
+        const userId      = '@Html.Raw(Model.UserId)'
+        const minSlotTime = "09:00:00"
+        const maxSlotTime = "19:00:00"
+        
         console.log('start', `"${startDate}"`, 'end', endDate, 'events', json)
        
         const calendar = new FullCalendar.Calendar(calendarEl, {
             events: JSON.parse(json),
             initialDate: startDate,
             initialView: 'timeGridWeek',           
+            slotMinTime: minSlotTime ,
+            slotMaxTime: maxSlotTime,
             nowIndicator: true,
             weekends: true,
-            slotMinTime: "09:00:00",
-            slotMaxTime: "19:00:00",
             navLinks: true, 
             selectable: true,
             selectMirror: true,
-            eventClassNames: (arg) => arg.event.title === "" ? [ 'notowner' ] : [ 'owner' ], // style event depending on event owner),
-            select:          (arg) => window.location = `/event/add/${roomId}?start=${formatDate(arg.start)}&end=${formatDate(arg.end)}`,
-            eventClick:      (arg) => window.location = `/event/edit/${arg.event.id}`,
             editable: false,
             eventOverlap: false,
             dayMaxEvents: true, // allow "more" link when too many events
+            select: (arg) => window.location = `/event/add/${roomId}?start=${formatDate(arg.start)}&end=${formatDate(arg.end)}`,
             headerToolbar: {
                 left:  'prev,next today',
                 center: 'title',

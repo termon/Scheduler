@@ -10,10 +10,12 @@ using Scheduler.Core.Models;
 
 namespace Scheduler.Web.ViewModels
 {
-
     public class EventViewModel 
     {
+        // non editable by user
         public int Id { get; set; } 
+        public int RoomId { get; set; }      
+        public int UserId { get; set; }
 
         [Required]            
         public string Title { get; set; }
@@ -26,42 +28,27 @@ namespace Scheduler.Web.ViewModels
 
         public string End { get; set; }  
         public string EndTime { get; set;}
+        
+        public IList<Event> Events { get; set; } = new List<Event>();    
 
-        public int RoomId { get; set; }      
-        public int UserId { get; set; }
-        
-        public IList<Event> Events { get; set; } = new List<Event>();
-        
-        // calendar json data
-        public string EventsJson { get; set; } = "[]";        
-        
-        public string EventsAsJson => JsonSerializer.Serialize(
-            Events.Select(e => new {
+        // generate calendar event json for user
+        public string SerializeEventsForUser(int userId, bool isAuth)
+        {                  
+            var transformed = Events.Select(e =>
+                new  { 
                     id = e.Id,
-                    title = e.Title,
-                    description = e.Description,
-                    start = e.Start.ToString("yyyy-MM-dd HH:mm"),                   
-                    end = e.End.ToString("yyyy-MM-dd HH:mm"),
                     userId = e.UserId,
-                    roomId= e.RoomId,
-                    display = UserId != e.UserId ? "background" : ""
-                }).ToList()
-        );
-        
-        public string Serialize()
-        {
-            var transformed = Events.Select(e => new {
-                    id = e.Id,
-                    title = e.Title,
-                    description = e.Description,
-                    start = e.Start.ToString("yyyy-MM-dd HH:mm"),                   
-                    end = e.End.ToString("yyyy-MM-dd HH:mm"),
-                    userId = e.UserId,
-                    roomId= e.RoomId,
-                    display = UserId != e.UserId ? "background" : ""
-                }).ToList();
+                    roomId = e.RoomId,
+                    title = (e.UserId == userId || isAuth) ? e.Title  : "",              // only display title if user owns event or isAuth
+                    description =  (e.UserId == userId || isAuth) ? e.Description : "",  // only display description if user owns event or isAuth
+                    start = e.Start.ToString("yyyy-MM-dd HH:mm"),                        // format start date into string                   
+                    end = e.End.ToString("yyyy-MM-dd HH:mm"),                            // format end date into string
+                    url = $"/event/edit/{e.Id}",                                         // url to navigate to when event clicked
+                    classNames = userId == e.UserId ? "owner" : "other",                 // style based on ownership (also done via calendar config property eventClassNames: ),
+            }
+            ).ToList(); 
             return JsonSerializer.Serialize(transformed);
-        }
+        }           
 
         // ---------------------- Mappers --------------------
         // make an viewmodel from an event

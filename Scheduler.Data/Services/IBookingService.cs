@@ -12,7 +12,7 @@ namespace Scheduler.Data.Services
         public Event GetEvent(int id);
 
         public IList<Event> GetEvents();       
-        public IList<Event> GetUserEventsForRoom(int roomId, int userId, bool isAuth);
+        public IList<Event> GetUserEventsForRoom(int roomId);
 
         public Event AddEvent(Event e);
         public bool DeleteEvent(int id);

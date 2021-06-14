@@ -49,22 +49,10 @@ namespace Scheduler.Data.Services
             return _ctx.Events.Where(q);          
         } 
  
-        // Return events for room/user (if isAuth then can view all events)
-        public IList<Event> GetUserEventsForRoom(int roomId, int userId, bool isAuth)
+        // Return events for room
+        public IList<Event> GetUserEventsForRoom(int roomId)
         {
-            return _ctx.Events
-                        .Where(e => e.RoomId == roomId)
-                        // only display event title/description if user owns event or isAuth
-                        .Select(e => new Event { 
-                            Id = e.Id, 
-                            Title = (e.UserId == userId || isAuth) ? e.Title  : "", 
-                            Description =  (e.UserId == userId || isAuth) ? e.Description : "",
-                            Start = e.Start,
-                            End = e.End,
-                            UserId = e.UserId,
-                            RoomId = e.RoomId
-                        })
-                        .ToList();            
+            return _ctx.Events.Where(e => e.RoomId == roomId).ToList();            
         } 
 
         // Add a new Event checking a Event with same email does not exist
@@ -74,8 +62,6 @@ namespace Scheduler.Data.Services
                 return null;
             }
             
-            // verify event business logic here - no overlapping events etc.
-
             var s = new Event
             {              
                 Title = e.Title,
@@ -85,6 +71,12 @@ namespace Scheduler.Data.Services
                 UserId = e.UserId,
                 RoomId = e.RoomId
             };
+                       
+            // verify event business logic here - no overlapping events etc.
+            if (!IsValidEvent(s))
+            {
+                return null;
+            }
             _ctx.Events.Add(s);
             _ctx.SaveChanges(); // write to database        
             return s; // return newly added Event
@@ -137,13 +129,13 @@ namespace Scheduler.Data.Services
             {
                 return false;
             }
-            // find all events that overlap
+            // count number of overlapping events 
             var count = _ctx.Events.Count(
                 e => e.Id != n.Id &&  
                      (n.Start < e.Start && n.End > e.Start ||
                      n.Start >= e.Start & n.Start < e.End && n.End > e.Start)
             );
-            return (count) == 0;
+            return count == 0;
         }
 
         // ---------------------- Room Related Operations ------------------------

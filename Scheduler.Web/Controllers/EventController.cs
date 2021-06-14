@@ -34,9 +34,9 @@ namespace Scheduler.Web.Controllers
             }       
 
             // get user events for specific room
-            var events = _svc.GetUserEventsForRoom(id, userId, User.HasOneOfRoles("Admin")).ToList();
+            var events = _svc.GetUserEventsForRoom(id);
            
-            var vm = new EventViewModel { UserId = userId, RoomId = id, Start = starts, End = starts, Events = events, EventsJson = JsonSerializer.Serialize(events) };  
+            var vm = new EventViewModel { UserId = userId, RoomId = id, Start = starts, End = starts, Events = events };  
             return View(vm);
 
         }
@@ -54,7 +54,7 @@ namespace Scheduler.Web.Controllers
         [HttpPost]
         public IActionResult Add([Bind]EventViewModel vm) 
         {
-            // check if event is invalid (overlapping)
+            // validate not overlapping event
             if (!_svc.IsValidEvent(vm.ToEvent()))
             {
                 ModelState.AddModelError("Start", "Event Cannot Overlap another event");
