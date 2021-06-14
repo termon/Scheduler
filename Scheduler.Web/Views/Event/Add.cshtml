@@ -1,0 +1,67 @@
+@model EventViewModel
+
+<partial name="_Calendar" model=@Model />
+
+<!-- bootstrap event modal -->
+<div class="modal" id="manageEvent" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog p-3 shadow-lg">
+        <form asp-action="Add">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title">Add New Event</h5>
+                </div>
+                <div class="modal-body">
+                    <!---------------------- hidden inputs for keys ---------------------->
+                    <input hidden id="id" class="form-control" asp-for="Id" />
+                    <input hidden id="roomId" class="form-control" asp-for="RoomId" />
+                    <input hidden id="userId" class="form-control" asp-for="UserId" />
+
+                    <!----------------------- event inputs -------------------------------->
+                    <div class="form-group">
+                        <input class="form-control" placeholder="Event name..." asp-for="Title" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <input class="form-control" placeholder="Event description..." asp-for="Description" />
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <div class="input-group">
+                            <!-- input defaults to include time (???) - using value attribute to override -->
+                            <input type="date" class="form-control" value=@Model.Start asp-for="Start" />
+                            <input type="time" class="form-control" asp-for="StartTime" />
+                        </div>
+                        <span asp-validation-for="Start" class="text-danger"></span>
+                    </div> 
+
+                    <div class="form-group mt-3">
+                        <div class="input-group">
+                            <!-- input defaults to include time (???) - using value attribute to override -->
+                            <input type="date" class="form-control" value=@Model.End asp-for="End" />                      
+                            <input type="time" class="form-control" asp-for="EndTime" />
+                        </div>
+                        <span asp-validation-for="End" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <div>
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                        <a asp-action="room" asp-route-id=@Model.RoomId id="cancelBtn" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = new bootstrap.Modal(document.getElementById("manageEvent"))
+        const calendar = configCalendar(document.getElementById('calendar'))
+        calendar.render()
+        modal.show()
+
+    });
+</script>

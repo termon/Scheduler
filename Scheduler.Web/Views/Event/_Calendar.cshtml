@@ -1,0 +1,66 @@
+﻿@model EventViewModel
+
+<h4>Room @Model.RoomId</h4>
+
+  <!-- calendar mounted here -->
+  <div id='calendar'></div>
+
+  <!-- local event styling -->
+  <style>
+    .notowner {
+      background-color: gray;
+      color: gray;
+    }
+    .owner {
+      background-color: cadetblue;
+      color: black;
+    }
+  </style>
+
+  <script>
+    // convert date to string format that can be consumed by .NET
+    function formatDate(date) { 
+      //return new Date(date).toISOString();
+      const d = new Date(date)
+      return d.getFullYear() + "-" + 
+             ("0" + (d.getMonth() + 1)).slice(-2) + "-" + 
+             ("0" + d.getDate()).slice(-2) + " " + 
+             d.toLocaleTimeString()   
+    }
+    
+    function configCalendar(calendarEl) {   
+        // needs wrapped in Html.Raw to stop characters being encoded (or evaluated)
+        const json      = '@Html.Raw(Model.EventsAsJson)'
+        const startDate = '@Html.Raw(Model.Start)'
+        const endDate   = '@Html.Raw(Model.End)'
+        const roomId    = '@Html.Raw(Model.RoomId)'
+        const userId    = '@Html.Raw(Model.UserId)'
+
+        console.log('start', `"${startDate}"`, 'end', endDate, 'events', json)
+       
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            events: JSON.parse(json),
+            initialDate: startDate,
+            initialView: 'timeGridWeek',           
+            nowIndicator: true,
+            weekends: true,
+            slotMinTime: "09:00:00",
+            slotMaxTime: "19:00:00",
+            navLinks: true, 
+            selectable: true,
+            selectMirror: true,
+            eventClassNames: (arg) => arg.event.title === "" ? [ 'notowner' ] : [ 'owner' ], // style event depending on event owner),
+            select:          (arg) => window.location = `/event/add/${roomId}?start=${formatDate(arg.start)}&end=${formatDate(arg.end)}`,
+            eventClick:      (arg) => window.location = `/event/edit/${arg.event.id}`,
+            editable: false,
+            eventOverlap: false,
+            dayMaxEvents: true, // allow "more" link when too many events
+            headerToolbar: {
+                left:  'prev,next today',
+                center: 'title',
+                right: 'timeGridWeek,timeGridDay,dayGridMonth'
+            } 
+        });
+        return calendar
+    }
+  </script>

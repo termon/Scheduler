@@ -1,0 +1,11 @@
+<!-- AMC - alert partial to display any alerts via layout scheduler -->
+@{
+    var message = TempData["Alert.Message"] ?? null;
+    var type    = TempData["Alert.Type"]    ?? null;
+}
+@if (message != null)
+{
+    <div class="alert alert-@type" role="alert">
+        @message
+    </div>
+}

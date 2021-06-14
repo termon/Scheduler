@@ -1,0 +1,28 @@
+@model IList<Room>
+
+
+<h1>Rooms</h1>
+
+<table class="table">
+    <thead class="thead-light">
+    <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Capacity</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+ 
+    <tbody>
+    @foreach (var room in Model) {
+        <tr>
+            <td>@room.Id</td>
+            <td>@room.Name</td>
+            <td>@room.Capacity</td>
+            <td>
+                <a asp-controller="Event" asp-action="Room" asp-route-id="@room.Id"><i class="bi bi-calendar-date"></i></a>     
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
