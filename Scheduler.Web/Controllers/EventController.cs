@@ -7,6 +7,7 @@ using Scheduler.Core.Models;
 using Scheduler.Web.ViewModels;
 using Scheduler.Core.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Scheduler.Web.Controllers
 {
@@ -54,13 +55,6 @@ namespace Scheduler.Web.Controllers
         [HttpPost]
         public IActionResult Add([Bind]EventViewModel vm) 
         {
-            // validate not overlapping event
-            if (!_svc.IsValidEvent(vm.ToEvent()))
-            {
-                ModelState.AddModelError("Start", "Event Cannot Overlap another event");
-                ModelState.AddModelError("End", "Event Cannot Overlap another event");
-            }
-
             if (ModelState.IsValid) {
                 var updated = _svc.AddEvent(vm.ToEvent());
                 if (updated != null)
@@ -99,12 +93,6 @@ namespace Scheduler.Web.Controllers
         [HttpPost]
         public IActionResult Edit(int id, [Bind]EventViewModel vm) 
         {
-            // check if event is invalid (overlapping)
-            if (!_svc.IsValidEvent(vm.ToEvent()))
-            {
-                ModelState.AddModelError("Start", "Event Cannot Overlap another event");
-                ModelState.AddModelError("End", "Event Cannot Overlap another event");
-            }
             if (ModelState.IsValid) {
                 var updated = _svc.UpdateEvent(vm.ToEvent());
                 if (updated != null)
@@ -138,6 +126,18 @@ namespace Scheduler.Web.Controllers
                 Alert("Event Could not be Deleted", AlertType.warning);
             }
             return RedirectToAction("Room", new { Id = e.RoomId }); 
+        }
+
+        // Remote validator to validate event
+        [AcceptVerbs("GET", "POST")]
+        public IActionResult ValidateDate([BindRequired, FromQuery]EventViewModel vm)
+        {
+            if (!_svc.IsValidEvent(vm.ToEvent()))          
+            {
+                return Json($"Event overlaps another event.");
+            }
+
+            return Json(true);
         }
 
     }

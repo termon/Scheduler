@@ -11,6 +11,7 @@
                     <h5 class="modal-title">Add New Event</h5>
                 </div>
                 <div class="modal-body">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <!---------------------- hidden inputs for keys ---------------------->
                     <input hidden id="id" class="form-control" asp-for="Id" />
                     <input hidden id="roomId" class="form-control" asp-for="RoomId" />
@@ -65,3 +66,7 @@
 
     });
 </script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

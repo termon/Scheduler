@@ -23,10 +23,12 @@ namespace Scheduler.Web.ViewModels
         [Required]
         public string Description { get; set; } 
 
+        [Remote(action: "ValidateDate", controller: "Event", AdditionalFields = "Start,StartTime,End,EndTime")]
         public string Start { get; set; } 
         public string StartTime { get; set;}
 
-        public string End { get; set; }  
+        [Remote(action: "ValidateDate", controller: "Event", AdditionalFields = "Start,StartTime,End,EndTime")]      
+        public string End { get; set; }
         public string EndTime { get; set;}
         
         public IList<Event> Events { get; set; } = new List<Event>();    
