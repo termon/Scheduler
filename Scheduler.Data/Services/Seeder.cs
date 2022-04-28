@@ -32,32 +32,32 @@ namespace Scheduler.Data.Services
             svc.AddEvent(
                 new Event { 
                     Title = "User 1 Room 1 Event 1", Description = "Conference", 
-                    Start= new DateTime(2021,month,day-1,09,0,0), 
-                    End = new DateTime(2021,month,day-1,10,30,0),
+                    Start= new DateTime(2022,month,day-1,09,0,0), 
+                    End = new DateTime(2022,month,day-1,10,30,0),
                     RoomId = r1.Id, UserId = u1.Id 
                 }
             );
             svc.AddEvent(
                 new Event { 
                     Title = "User 3 Room 1 Event 1", Description = "Party", 
-                    Start= new DateTime(2021,month,day,11,0,0), 
-                    End = new DateTime(2021,month,day,14,0,0),
+                    Start= new DateTime(2022,month,day,11,0,0), 
+                    End = new DateTime(2022,month,day,14,0,0),
                     RoomId = r1.Id, UserId = u3.Id 
                 }
             );
             svc.AddEvent(
                 new Event { 
                     Title = "User 3 Room 1 Event 2", Description = "Conference", 
-                    Start= new DateTime(2021,month,day+1,12,0,0), 
-                    End = new DateTime(2021,month,day+1,14,0,0),
+                    Start= new DateTime(2022,month,day+1,12,0,0), 
+                    End = new DateTime(2022,month,day+1,14,0,0),
                     RoomId = r1.Id, UserId = u3.Id 
                 }
             );
             svc.AddEvent(
                 new Event { 
                     Title = "User 3 Room 2 Event 3", Description = "Seminar", 
-                    Start= new DateTime(2021,month,day+1,10,0,0), 
-                    End = new DateTime(2021,month,day+1,12,0,0),
+                    Start= new DateTime(2022,month,day+1,10,0,0), 
+                    End = new DateTime(2022,month,day+1,12,0,0),
                     RoomId = r2.Id, UserId = u3.Id 
                 }
             );

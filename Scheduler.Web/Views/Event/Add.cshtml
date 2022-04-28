@@ -31,7 +31,7 @@
                     <div class="form-group mt-3">
                         <div class="input-group">
                             <!-- input defaults to include time (???) - using value attribute to override -->
-                            <input type="date" class="form-control" value=@Model.Start asp-for="Start" />
+                            <input type="date" class="form-control" asp-for="Start" value=@Model.Start/>
                             <input type="time" class="form-control" asp-for="StartTime" />
                         </div>
                         <span asp-validation-for="Start" class="text-danger"></span>

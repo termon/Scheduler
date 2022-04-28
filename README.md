@@ -1,5 +1,5 @@
 
-DotNet Core 5 FullCalendar Scheduler
+DotNet 6 FullCalendar Scheduler
 =====================================
 
 This .NET project is based on the DotNetTemplate [https://github.com/termon/DotNetTemplate] and demonstrates use of FullCalendar [https://fullcalendar.io] in an MVC application. Management of calendar events is handled by the MVC application and full calendar is simply used to render the calendar events.
