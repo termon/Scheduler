@@ -60,7 +60,7 @@ namespace Scheduler.Web.Controllers
                 if (updated != null)
                 {
                     Alert("Event Successfully Created", AlertType.info);
-                    return RedirectToAction("Room", new { Id = updated.RoomId });
+                    return RedirectToAction(nameof(Room), new { Id = updated.RoomId });
                 }
                 else 
                 {
@@ -79,7 +79,7 @@ namespace Scheduler.Web.Controllers
             var e = _svc.GetEvent(id);
             if (e == null) {
                 Alert("Event Does not exist", AlertType.warning); 
-                return RedirectToAction("Index");  
+                return RedirectToAction(nameof(Index), nameof(Room));  
             }
             // check user has privilege to edit event
             if (userId != e.UserId && !User.HasOneOfRoles(Role.Admin.ToString())) {
@@ -87,7 +87,8 @@ namespace Scheduler.Web.Controllers
                 return RedirectToAction("Room", new { Id = e.RoomId }); 
             }
 
-            return View(EventViewModel.FromEvent(e));
+            var vm = EventViewModel.FromEvent(e);
+            return View(vm);
         }
 
         [HttpPost]
@@ -114,7 +115,7 @@ namespace Scheduler.Web.Controllers
             var e = _svc.GetEvent(id);
             if (e == null) {
                 Alert("No Such Event", AlertType.warning);
-                return RedirectToAction("Index","Event");
+                return RedirectToAction(nameof(Index),nameof(Room));
             }
             
             if (_svc.DeleteEvent(id)) 
@@ -125,7 +126,7 @@ namespace Scheduler.Web.Controllers
             {
                 Alert("Event Could not be Deleted", AlertType.warning);
             }
-            return RedirectToAction("Room", new { Id = e.RoomId }); 
+            return RedirectToAction(nameof(Room), new { Id = e.RoomId }); 
         }
 
         // Remote validator to validate event

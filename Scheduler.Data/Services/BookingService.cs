@@ -132,9 +132,9 @@ namespace Scheduler.Data.Services
             }
             // count number of overlapping events 
             var count = _ctx.Events.Count(
-                e => e.Id != n.Id &&  
-                     (n.Start < e.Start && n.End > e.Start ||
-                     n.Start >= e.Start & n.Start < e.End && n.End > e.Start)
+                e => e.Id != n.Id &&                                        // exclude event being checked
+                     (n.Start < e.Start && n.End > e.Start ||                    // event overlaps start of existing event
+                     n.Start >= e.Start & n.Start < e.End && n.End > e.Start)    // event overlaps end of existing event
             );
             return count == 0;
         }
