@@ -4,13 +4,18 @@
 
 <div class="modal" id="manageEvent" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
     <div class="modal-dialog">
-      
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Event @Model.Id</h5>
-                </div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Event @Model.Id</h5>
+                <form asp-action="Delete" asp-route-id="@Model.Id">
+                    <input type="hidden" asp-for="@Model.Id"/>
+                    <button type="submit" class="btn btn-link">
+                        <i class="bi bi-trash"></i>
+                    </button> 
+                </form>
+            </div>
 
-                <form asp-action="Edit">
+            <form asp-action="Edit">
                 <div class="modal-body">
                     <!---------------------- hidden inputs for keys ---------------------->
                     <input hidden id="id" class="form-control" asp-for="Id" />
@@ -49,12 +54,9 @@
                         <input type="submit" value="Save" class="btn btn-primary" />
                         <a asp-action="room" asp-route-id=@Model.RoomId id="cancelBtn" class="btn btn-secondary">Cancel</a>
                     </div>
-                </form>
-                    <form asp-action="Delete" asp-route-id="@Model.Id">
-                        <input type="hidden" asp-for="@Model.Id"/>
-                        <input type="submit" value="Delete" class="btn btn-link" />                  
-                    </form>
                 </div>
+            </form>
+        </div>
     </div>
 </div>
 
