@@ -25,7 +25,7 @@ namespace Scheduler.Web.Controllers
         public IActionResult Room(int id, string starts=null)
         {  
             // get logged in user
-            var userId = UserId();   
+            var userId = User.GetSignedInUserId();
 
             // if no start date default to today
             if (starts == null) 
@@ -42,9 +42,9 @@ namespace Scheduler.Web.Controllers
 
         }
 
-        public IActionResult Add(int id, DateTime start, DateTime end) 
+        public IActionResult Add(int id, DateTime start, DateTime end)
         {
-            var userId = UserId();   
+            var userId = User.GetSignedInUserId();
             var room = _svc.GetRoom(id);
 
             var e = new Event { RoomId = room.Id, UserId = userId, Start = start, End = end };
@@ -73,7 +73,7 @@ namespace Scheduler.Web.Controllers
         public IActionResult Edit(int id) 
         {
             // extract users id and role from Identity
-            var userId = UserId();
+            var userId = User.GetSignedInUserId();
                
             // load the event
             var e = _svc.GetEvent(id);

@@ -71,18 +71,100 @@ namespace Scheduler.Test
            
         }
 
+       
         [Fact]
-        public void LoginWithInvalidCredentialsShouldNotWork()
+        public void AddEventForInvalidUserShouldNotWork()
         {
             // arrange
-            service.AddUser("admin", "admin@mail.com", "admin", Role.Admin );
+            var userId = 0; // invalid user
 
             // act      
-            var user = service.Authenticate("admin@mail.com","xxx");
+            var calendarEvent = service.AddEvent(
+                new Event
+                    { Description = "Demo", Start = DateTime.Now, End = DateTime.Now + TimeSpan.FromHours(1), UserId = userId }
+            );
 
             // assert
-            Assert.Null(user);
-           
+            Assert.NotNull(calendarEvent);
+        }
+        
+        [Fact]
+        public void AddEventThatDoesNotOverlapShouldWork()
+        {
+            // arrange
+            var user = service.AddUser("admin", "admin@mail.com", "admin", Role.Admin );
+
+            // act      
+            var calendarEvent = service.AddEvent(
+                new Event
+                { Description = "Demo", Start = DateTime.Now, End = DateTime.Now + TimeSpan.FromHours(1), UserId = user.Id }
+            );
+
+            // assert
+            Assert.NotNull(calendarEvent);
+        }
+        
+        [Fact]
+        public void AddEventThatOverlapsStartShouldNotWork()
+        {
+            // arrange
+            var user = service.AddUser("admin", "admin@mail.com", "admin", Role.Admin );
+
+            var start = DateTime.Now;
+            var end = DateTime.Now + TimeSpan.FromHours(1);
+            var calendarEvent1 = service.AddEvent(
+                new Event { Description = "Demo1", Start = start, End = end, UserId = user.Id }
+            );
+            
+            // act  - create overlapping event
+            var calendarEvent2 = service.AddEvent(
+                new Event { Description = "Demo2", Start = start - TimeSpan.FromMinutes(30), End = end - TimeSpan.FromMinutes(30), UserId = user.Id }
+            );
+
+            // assert
+            Assert.Null(calendarEvent2);
+        }
+        
+        [Fact]
+        public void AddEventThatOverlapsEndShouldNotWork()
+        {
+            // arrange
+            var user = service.AddUser("admin", "admin@mail.com", "admin", Role.Admin );
+
+            var start = DateTime.Now;
+            var end = DateTime.Now + TimeSpan.FromHours(1);
+            var calendarEvent1 = service.AddEvent(
+                new Event { Description = "Demo1", Start = start, End = end, UserId = user.Id }
+            );
+            
+            // act  - create overlapping event
+            var calendarEvent2 = service.AddEvent(
+                new Event { Description = "Demo2", Start = start + TimeSpan.FromMinutes(30), End = end + TimeSpan.FromMinutes(30), UserId = user.Id }
+            );
+
+            // assert
+            Assert.Null(calendarEvent2);
+        }
+        
+        [Fact]
+        public void AddEventThatOverlapsCompletelyShouldNotWork()
+        {
+            // arrange
+            var user = service.AddUser("admin", "admin@mail.com", "admin", Role.Admin );
+
+            var start = DateTime.Now;
+            var end = DateTime.Now + TimeSpan.FromHours(1);
+            var calendarEvent1 = service.AddEvent(
+                new Event { Description = "Demo1", Start = start, End = end, UserId = user.Id }
+            );
+            
+            // act  - create overlapping event
+            var calendarEvent2 = service.AddEvent(
+                new Event { Description = "Demo2", Start = start - TimeSpan.FromMinutes(30), End = end + TimeSpan.FromMinutes(30), UserId = user.Id }
+            );
+
+            // assert
+            Assert.Null(calendarEvent2);
         }
 
     }

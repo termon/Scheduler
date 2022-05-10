@@ -43,8 +43,8 @@ namespace Scheduler.Web.ViewModels
                     roomId = e.RoomId,
                     title = (e.UserId == userId || isAuth) ? e.Title  : "",              // only display title if user owns event or isAuth
                     description =  (e.UserId == userId || isAuth) ? e.Description : "",  // only display description if user owns event or isAuth
-                    start = e.Start.ToString("yyyy-MM-dd HH:mm"),                        // format start date into string                   
-                    end = e.End.ToString("yyyy-MM-dd HH:mm"),                            // format end date into string
+                    start = e.Start.ToString("yyyy-MM-dd HH:mm"),                  // format start date into string                   
+                    end = e.End.ToString("yyyy-MM-dd HH:mm"),                      // format end date into string
                     url = $"/event/edit/{e.Id}",                                         // url to navigate to when event clicked
                     classNames = userId == e.UserId ? "owner" : "other",                 // style based on ownership (also done via calendar config property eventClassNames: ),
             }

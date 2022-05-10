@@ -236,6 +236,11 @@ namespace Scheduler.Data.Services
             return _ctx.Users.FirstOrDefault(u => u.Email == email && ( id == null || u.Id != id));
         }
 
+        // Verify if email is available or registered to specified user
+        public bool IsEmailAvailable(string email, int userId)
+        {
+            return _ctx.Users.FirstOrDefault(u => u.Email == email && u.Id != userId) == null;
+        }
         public IList<User> GetUsersQuery(Func<User,bool> q)
         {
             return _ctx.Users.Where(q).ToList();

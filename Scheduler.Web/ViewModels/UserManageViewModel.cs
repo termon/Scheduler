@@ -13,7 +13,7 @@ namespace Scheduler.Web.ViewModels
  
         [Required]
         [EmailAddress]
-        [Remote(action: "GetUserByEmailAddress", controller: "User")]
+        [Remote(action: "VerifyEmailAvailable", controller: "User", AdditionalFields = nameof(Id))]
         public string Email { get; set; }
 
         [Required]

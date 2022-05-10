@@ -17,26 +17,7 @@ namespace Scheduler.Web.Controllers
             TempData["Alert.Message"] = message;
             TempData["Alert.Type"] = type.ToString();
         }
-
-        // return user identity ID if authenticated otherwise null
-        public int UserId()
-        {
-            try
-            {
-                if (User.Identity.IsAuthenticated) {
-                    string sid = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid).Value;
-                    return Int32.Parse(sid);
-                }
-            }
-            catch (FormatException) { }
-            return 0;
-        }
         
-        // check if user us currently authenticated
-        public bool IsAuthenticated() 
-        {
-            return User.Identity.IsAuthenticated;
-        }
     }
  
 }

@@ -1,4 +1,6 @@
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -23,8 +25,7 @@ namespace Scheduler.Web
             return roles.FirstOrDefault(role => claims.IsInRole(role)) != null;
         }
 
-        // ----------------------------- AUTHENTICATION --------------------------------//
-
+        // --------------------------- AUTHENTICATION Helper ----------------------------//
         // IServiceCollection extension method adding cookie authentication 
         public static void AddCookieAuthentication(this IServiceCollection services, 
                                                         string notAuthorised = "/User/ErrorNotAuthorised", 
@@ -37,49 +38,23 @@ namespace Scheduler.Web
             });
         }
 
-         // IServiceCollection extension method adding JwtAuthentication
-        public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration _config) {
-            var key = Encoding.ASCII.GetBytes(_config["JwtConfig:JwtSecret"]);
-            
-            services.AddAuthentication(x => {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(x => {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
-            });
-        }
-
-        // IServiceCollection extension method adding both Cookie and JwtAuthentication
-        // API routes need to specify that Jwt should be used as the default
-        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public static void AddCookieAndJwtAuthentication(this IServiceCollection services, IConfiguration _config,
-                                        string notAuthorised = "/User/ErrorNotAuthorised", 
-                                        string notAuthenticated= "/User/ErrorNotAuthenticated")
-        {                  
-            var key = Encoding.ASCII.GetBytes(_config["JwtConfig:JwtSecret"]);
-
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options => {
-                        options.AccessDeniedPath = notAuthorised;
-                        options.LoginPath = notAuthenticated;
-                })
-                .AddJwtBearer(x => {
-                    x.RequireHttpsMetadata = false;
-                    x.SaveToken = true;
-                    x.TokenValidationParameters = new TokenValidationParameters {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(key),
-                        ValidateIssuer = false,
-                        ValidateAudience = false
-                    };
-                });
+        // --------------------------- AUTHENTICATION Helper ----------------------------//
+        // ClaimsPrincipal extension method to extract user id (sid) from claims
+        public static int GetSignedInUserId(this ClaimsPrincipal user)
+        {
+            if (user != null && user.Identity != null && user.Identity.IsAuthenticated) {
+                // id stored as a string in the Sid claim - convert to an int and return
+                Claim sid = user.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid);
+                if (sid == null) {
+                    throw new KeyNotFoundException("Sid Claim is not found in the identity");
+                } 
+                try {
+                    return Int32.Parse(sid.Value);  
+                } catch (FormatException) {
+                    throw new KeyNotFoundException("Sid Claim value is invalid - not an integer");  
+                }
+            }
+            return 0;
         }
         
     }

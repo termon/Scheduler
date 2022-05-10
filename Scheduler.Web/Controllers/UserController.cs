@@ -14,8 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Scheduler.Core.Security;
 
 /**
- *  AMC - User Management Controller providing registration
- *        and login functionality
+ *  User Management Controller providing registration and login functionality
  */
 namespace Scheduler.Web.Controllers
 {
@@ -37,7 +36,7 @@ namespace Scheduler.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login([Bind("Email,Password")] UserLoginViewModel m)
+        public async Task<IActionResult> Login(UserLoginViewModel m)
         {
             var user = _svc.Authenticate(m.Email, m.Password);
             if (user == null)
@@ -62,7 +61,7 @@ namespace Scheduler.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Register([Bind("Name,Email,Password,PasswordConfirm,Role")] UserRegisterViewModel m)       
+        public IActionResult Register(UserRegisterViewModel m)       
         {
             if (!ModelState.IsValid)
             {
@@ -82,7 +81,7 @@ namespace Scheduler.Web.Controllers
         [Authorize]
         public IActionResult UpdateProfile()
         {
-            var user = _svc.GetUser(UserId());
+            var user = _svc.GetUser(User.GetSignedInUserId());
             var userViewModel = new UserManageViewModel { 
                 Id = user.Id, 
                 Name = user.Name, 
@@ -95,7 +94,7 @@ namespace Scheduler.Web.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateProfile([Bind("Id,Name,Email,Role")] UserManageViewModel m)       
+        public async Task<IActionResult> UpdateProfile(UserManageViewModel m)       
         {
             var user = _svc.GetUser(m.Id);
             
@@ -127,7 +126,7 @@ namespace Scheduler.Web.Controllers
         public IActionResult UpdatePassword()
         {
             // get identity id of signed in user
-            var id = UserId();
+            var id = User.GetSignedInUserId();
 
             var user = _svc.GetUser(id);
             var passwordViewModel = new UserPasswordViewModel { 
@@ -141,7 +140,7 @@ namespace Scheduler.Web.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdatePassword([Bind("Id,OldPassword,Password,PasswordConfirm")] UserPasswordViewModel m)       
+        public async Task<IActionResult> UpdatePassword(UserPasswordViewModel m)       
         {
             var user = _svc.GetUser(m.Id);
             if (!ModelState.IsValid || user == null)
@@ -178,15 +177,12 @@ namespace Scheduler.Web.Controllers
         
         // -------------------------- Helper Methods ------------------------------
 
-        // Called by Remote Validation attribute on RegisterViewModel to verify email address is unique
+        // Called by Remote Validation attribute on RegisterViewModel to verify email address is available
         [AcceptVerbs("GET", "POST")]
-        public IActionResult GetUserByEmailAddress(string email)
+        public IActionResult VerifyEmailAvailable(string email, int id)
         {
-            // get identity id of signed in user
-            var id = UserId();
-            // check if email is available, unless already owned by user with id
-            var user = _svc.GetUserByEmail(email, id);
-            if (user != null)
+            // check if email is available, or owned by user with id 
+            if (!_svc.IsEmailAvailable(email,id))
             {
                 return Json($"A user with this email address {email} already exists.");
             }
@@ -198,7 +194,7 @@ namespace Scheduler.Web.Controllers
         public IActionResult VerifyPassword(string oldPassword)
         {
             // get identity id of signed in user
-            var id = UserId();            
+            var id = User.GetSignedInUserId();            
             // check if email is available, unless already owned by user with id
             var user = _svc.GetUser(id);
             if (user == null || !Hasher.ValidateHash(user.Password, oldPassword))
